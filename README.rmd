@@ -6,16 +6,7 @@ output: rmarkdown::github_document
 ---
 
 
-<!-- ## Source plot functions -->
-<!-- There are a few variations of the plot available in a few different functions, plus some support functions to tidy data.  -->
-<!-- ```{r} -->
-<!-- source("scripts/generalised_cell_cell_interaction.R") -->
-<!-- ``` -->
 
-
-<!-- ```{r} -->
-<!-- source("scripts/generalised_cell_cell_interaction.R") -->
-<!-- ``` -->
 ## Install
 ```{r, eval=FALSE}
 library(devtools)
@@ -24,6 +15,12 @@ install_github("redgar598/CellNetVis")
 
 ## Load
 ```{r}
+suppressMessages(library(Seurat))
+suppressMessages(library(dplyr))
+suppressMessages(library(ggplot2))
+suppressMessages(library(cowplot))
+suppressMessages(library(reshape2))
+
 library(CellNetVis)
 ```
 

@@ -1,3 +1,14 @@
+# The following block is used by usethis to automatically manage
+# roxygen namespace tags. Modify with care!
+## usethis namespace: start
+#' @import cowplot
+#' @import dplyr
+#' @import ggplot2
+#' @import reshape2
+#' @import Seurat
+## usethis namespace: end
+NULL
+
 
 ###################################
 ## colour by cell type
@@ -280,6 +291,17 @@ plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_conn
 ######################
 ## Format cellphonedb output
 ######################
+#' Restructure output of cellphonedb
+#'
+#' This function formats cpdb data into a simplified cell-cell connection dataframe
+#' @param cpdb_out Output from cellphonedb. The object named something like "statistical_analysis_significant_means.txt"
+#' @param receptor gene name of the receptor
+#' @param ligand gene name of the ligand
+#' @keywords UMAP
+#' @export
+#' @examples
+#' cell_cell_format_cpdb()
+#'
 cell_cell_format_cpdb<-function(cpdb_out, receptor, ligand){
   cell_cell_connections_plt<-melt(cpdb_out, id=colnames(cpdb_out)[c(1:12)])
   cell_cell_connections_plt$variable<-as.character(cell_cell_connections_plt$variable)
@@ -294,6 +316,17 @@ cell_cell_format_cpdb<-function(cpdb_out, receptor, ligand){
 ######################
 ## Format CellChat output
 ######################
+#' Restructure output of CellChat
+#'
+#' This function formats CellChat data into a simplified cell-cell connection dataframe
+#' @param cell_chat_out Output from CellChat. The object is the out put of the "subsetCommunication" function
+#' @param receptor gene name of the receptor
+#' @param ligand gene name of the ligand
+#' @keywords UMAP
+#' @export
+#' @examples
+#' cell_cell_format_cellchat()
+#'
 cell_cell_format_cellchat<-function(cell_chat_out, receptor, ligand){
   colnames(cell_chat_out)[which(colnames(cell_chat_out)=="source")]<-"Cell1"
   colnames(cell_chat_out)[which(colnames(cell_chat_out)=="target")]<-"Cell2"
