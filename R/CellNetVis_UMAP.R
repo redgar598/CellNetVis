@@ -1,25 +1,22 @@
-#
-# suppressMessages(library(Seurat))
-# suppressMessages(library(dplyr))
-# suppressMessages(library(ggplot2))
-# suppressMessages(library(cowplot))
-# suppressMessages(library(reshape2))
-#
-
 
 ###################################
 ## colour by cell type
 ###################################
 
 
-#' A Cat Function
+#' Visualisation to colour the UMAP points by cell type label
 #'
 #' This function allows you to express your love of cats.
-#' @param love Do you love cats? Defaults to TRUE.
-#' @keywords cats
+#' @param seurat_object object with UMAP coordinates
+#' @param cell_type_col column name of cell type
+#' @param cell_cell_connections data.frame structured like the example “cell_cell_connections”.
+#' @param ligand_cell_type do you want to limit the curves drawn to only starting at one cell type of interest? For example only cDC2 cells. Defaults to NA
+#' @param self_interactions do you want to see loops for when cells are interacting with themselves? Defaults to F
+#' @param label_cell_type do you want text labels for the cell types? Defaults to T
+#' @keywords UMAP
 #' @export
 #' @examples
-#' cat_function()
+#' plot_gene_UMAP_color_bycelltype()
 #'
 plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cell_connections, ligand_cell_type = NA, self_interactions = F, label_cell_type = T){
   # extract UMAP coordinates
