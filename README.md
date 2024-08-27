@@ -42,8 +42,9 @@ cell_cell_connections
 
 ## Colour UMAP by Cell Type
 
-This function takes arguments as follows: seurat object, column name of
-cell type, a data.frame structured like “cell_cell_connections”.
+This function takes arguments as follows: seurat object (here d10x),
+column name of cell type (annotation in the example), a data.frame
+structured like “cell_cell_connections”.
 
 Optional arguments: ligand_cell_type - do you want to limit the curves
 drawn to only starting at one cell type of interest? For example only
