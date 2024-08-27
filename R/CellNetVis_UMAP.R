@@ -6,7 +6,7 @@
 
 #' Visualisation to colour the UMAP points by cell type label
 #'
-#' This function allows you to express your love of cats.
+#' Colour UMAP by Cell Type.
 #' @param seurat_object object with UMAP coordinates
 #' @param cell_type_col column name of cell type
 #' @param cell_cell_connections data.frame structured like the example “cell_cell_connections”.
@@ -111,6 +111,22 @@ plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cel
 ###############
 ## Color by receptor ligand expression
 ###############
+#' Visualisation to colour the UMAP points by expression of two genes
+#'
+#' Colour UMAP by expression of two genes. The gene don't have to be receptors and ligands just a typical use case.
+#' @param seurat_object object with UMAP coordinates
+#' @param cell_type_col column name of cell type
+#' @param cell_cell_connections data.frame structured like the example “cell_cell_connections”.
+#' @param ligand_cell_type do you want to limit the curves drawn to only starting at one cell type of interest? For example only cDC2 cells. Defaults to NA
+#' @param self_interactions do you want to see loops for when cells are interacting with themselves? Defaults to F
+#' @param label_cell_type do you want text labels for the cell types? Defaults to T
+#' @param receptor gene name of the receptor (or any gene).
+#' @param ligand gene name of the ligand (or any gene)
+#' @param percentile the percentile cut off to call a gene as “highly expressed” and color a cell as having that gene “on”. Defaults to 0.8
+#' @keywords UMAP
+#' @export
+#' @examples
+#' plot_gene_UMAP_exp_colored()
 plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_connections,ligand_cell_type=NA, self_interactions=F, label_cell_type=T, receptor, ligand, percentile=0.8){
 
   # extract UMAP coordinates

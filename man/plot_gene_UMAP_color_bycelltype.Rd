@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellNetVis_UMAP.R
 \name{plot_gene_UMAP_color_bycelltype}
 \alias{plot_gene_UMAP_color_bycelltype}
-\title{A Cat Function}
+\title{Visualisation to colour the UMAP points by cell type label}
 \usage{
 plot_gene_UMAP_color_bycelltype(
   seurat_object,
@@ -14,13 +14,23 @@ plot_gene_UMAP_color_bycelltype(
 )
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{seurat_object}{object with UMAP coordinates}
+
+\item{cell_type_col}{column name of cell type}
+
+\item{cell_cell_connections}{data.frame structured like the example “cell_cell_connections”.}
+
+\item{ligand_cell_type}{do you want to limit the curves drawn to only starting at one cell type of interest? For example only cDC2 cells. Defaults to NA}
+
+\item{self_interactions}{do you want to see loops for when cells are interacting with themselves? Defaults to F}
+
+\item{label_cell_type}{do you want text labels for the cell types? Defaults to T}
 }
 \description{
-This function allows you to express your love of cats.
+Colour UMAP by Cell Type.
 }
 \examples{
-cat_function()
+plot_gene_UMAP_color_bycelltype()
 
 }
-\keyword{cats}
+\keyword{UMAP}
