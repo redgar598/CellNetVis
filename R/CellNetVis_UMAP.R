@@ -22,6 +22,7 @@ NULL
 #' @param cell_type_col column name of cell type
 #' @param cell_cell_connections data.frame structured like the example “cell_cell_connections”.
 #' @param ligand_cell_type do you want to limit the curves drawn to only starting at one cell type of interest? For example only cDC2 cells. Defaults to NA
+#' @param receptor_cell_type do you want to limit the curves drawn to only ending at one cell type of interest? For example only cDC2 cells. Defaults to NA
 #' @param self_interactions do you want to see loops for when cells are interacting with themselves? Defaults to F
 #' @param label_cell_type do you want text labels for the cell types? Defaults to T
 #' @keywords UMAP
@@ -29,7 +30,7 @@ NULL
 #' @examples
 #' plot_gene_UMAP_color_bycelltype()
 #'
-plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cell_connections, ligand_cell_type = NA, self_interactions = F, label_cell_type = T){
+plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cell_connections, ligand_cell_type = NA, receptor_cell_type = NA, self_interactions = F, label_cell_type = T){
   # extract UMAP coordinates
   umap_mat<-as.data.frame(Embeddings(object = seurat_object, reduction = "umap"))#
   umap_mat$cell<-rownames(umap_mat)
@@ -41,8 +42,10 @@ plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cel
   if("umap_2"%in%colnames(plt)){colnames(plt)[which(colnames(plt)=="umap_2")]<-"UMAP_2"}
 
 
-  ## only ligands in one cell type
-  if(is.na(ligand_cell_type)){}else{cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell1==ligand_cell_type),]}
+  ## only ligands and receptors in given cell types
+  if(!all(is.na(ligand_cell_type))){cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell1%in%ligand_cell_type),]}else{}
+  if(!all(is.na(receptor_cell_type))){cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell2%in%receptor_cell_type),]}else{}
+  if(nrow(cell_cell_connections)==0){print("No interactions to display with this combination")}
 
   ## Cell type centroids
   plt_median<-plt %>% group_by(!!sym(cell_type_col)) %>% summarize(mean_umap1=median(UMAP_1), mean_umap2=median(UMAP_2))
@@ -119,6 +122,8 @@ plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cel
 
 
 
+
+
 ###############
 ## Color by receptor ligand expression
 ###############
@@ -129,6 +134,7 @@ plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cel
 #' @param cell_type_col column name of cell type
 #' @param cell_cell_connections data.frame structured like the example “cell_cell_connections”.
 #' @param ligand_cell_type do you want to limit the curves drawn to only starting at one cell type of interest? For example only cDC2 cells. Defaults to NA
+#' @param receptor_cell_type do you want to limit the curves drawn to only ending at one cell type of interest? For example only cDC2 cells. Defaults to NA
 #' @param self_interactions do you want to see loops for when cells are interacting with themselves? Defaults to F
 #' @param label_cell_type do you want text labels for the cell types? Defaults to T
 #' @param receptor gene name of the receptor (or any gene).
@@ -138,7 +144,7 @@ plot_gene_UMAP_color_bycelltype<-function(seurat_object, cell_type_col, cell_cel
 #' @export
 #' @examples
 #' plot_gene_UMAP_exp_colored()
-plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_connections,ligand_cell_type=NA, self_interactions=F, label_cell_type=T, receptor, ligand, percentile=0.8){
+plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_connections,ligand_cell_type=NA,receptor_cell_type = NA, self_interactions=F, label_cell_type=T, receptor, ligand, percentile=0.8){
 
   # extract UMAP coordinates
   umap_mat<-as.data.frame(Embeddings(object = seurat_object, reduction = "umap"))#
@@ -150,8 +156,10 @@ plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_conn
   if("umap_1"%in%colnames(plt)){colnames(plt)[which(colnames(plt)=="umap_1")]<-"UMAP_1"}
   if("umap_2"%in%colnames(plt)){colnames(plt)[which(colnames(plt)=="umap_2")]<-"UMAP_2"}
 
-  ## only ligands in one cell type
-  if(is.na(ligand_cell_type)){}else{cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell1==ligand_cell_type),]}
+  ## only ligands and receptors in given cell types
+  if(!all(is.na(ligand_cell_type))){cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell1%in%ligand_cell_type),]}else{}
+  if(!all(is.na(receptor_cell_type))){cell_cell_connections<-cell_cell_connections[which(cell_cell_connections$Cell2%in%receptor_cell_type),]}else{}
+  if(nrow(cell_cell_connections)==0){print("No interactions to display with this combination")}
 
   ## Cell type centroids
   plt_median<-plt %>% group_by(!!sym(cell_type_col)) %>% summarize(mean_umap1=median(UMAP_1), mean_umap2=median(UMAP_2))
@@ -302,13 +310,31 @@ plot_gene_UMAP_exp_colored<-function(seurat_object,cell_type_col, cell_cell_conn
 #' @examples
 #' cell_cell_format_cpdb()
 #'
-cell_cell_format_cpdb<-function(cpdb_out, receptor, ligand){
-  cell_cell_connections_plt<-melt(cpdb_out, id=colnames(cpdb_out)[c(1:12)])
+cell_cell_format_cpdb<-function(cpdb_out, cell_names, receptor, ligand){
+  cell_names<-gsub(" ","_", cell_names)
+  first_col_cellname<-min(grep(paste(cell_names,collapse="|"), colnames(cpdb_out)))
+  cell_cell_connections_plt<-melt(cpdb_out, id=colnames(cpdb_out)[c(1:first_col_cellname)])
   cell_cell_connections_plt$variable<-as.character(cell_cell_connections_plt$variable)
+
+  ## match the cell names output from cpdb to the seurat object ("/" in cell anmes become a problem)
+  problem_names<-as.character(cell_names[grep("/",cell_names)])
+  replace_in_cpdb<-sapply(strsplit(problem_names,"/"), function(y) y[1] )
+  replace_in_cpdb<-gsub(" ","_", replace_in_cpdb)
 
   cell_cell_connections_plt$Cell1<-sapply(1:nrow(cell_cell_connections_plt), function(x) strsplit(cell_cell_connections_plt$variable[x], "[.]")[[1]][1])
   cell_cell_connections_plt$Cell2<-sapply(1:nrow(cell_cell_connections_plt), function(x) strsplit(cell_cell_connections_plt$variable[x], "[.]")[[1]][2])
   cell_cell_connections_plt<-cell_cell_connections_plt[which(!(is.na(cell_cell_connections_plt$value))),]
+
+  cell_cell_connections_plt$Cell1<-as.factor(cell_cell_connections_plt$Cell1)
+  lapply(1:length(replace_in_cpdb), function(x){
+    levels(cell_cell_connections_plt$Cell1)[grep(replace_in_cpdb[x], levels(cell_cell_connections_plt$Cell1))]<<-problem_names[x]
+  })
+  cell_cell_connections_plt$Cell2<-as.factor(cell_cell_connections_plt$Cell2)
+  lapply(1:length(replace_in_cpdb), function(x){
+    levels(cell_cell_connections_plt$Cell2)[grep(replace_in_cpdb[x], levels(cell_cell_connections_plt$Cell2))]<<-problem_names[x]
+  })
+  cell_cell_connections_plt$Cell1<-as.character(cell_cell_connections_plt$Cell1)
+  cell_cell_connections_plt$Cell2<-as.character(cell_cell_connections_plt$Cell2)
 
   cell_cell_connections_plt[which(cell_cell_connections_plt$gene_a==ligand & cell_cell_connections_plt$gene_b==receptor), c("Cell1","Cell2", "gene_a","gene_b","value")]}
 
